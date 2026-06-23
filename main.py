@@ -1,1 +1,2 @@
-#Testando o tkinter
+import linhasERabiscos as LR
+
