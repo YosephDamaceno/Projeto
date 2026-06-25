@@ -14,6 +14,9 @@ def iniciar_figura_nova(event):
     elif tipo_figura_var.get() == 'oval':
         figura_nova = ("oval", (event.x, event.y, event.x, event.y)) ### novo ###
 
+    elif tipo_figura_var.get() == 'Círculo':
+        figura_nova = ('Círculo', (event.x, event.y, event.x, event.y)) 
+
     else:
         figura_nova = ("rabisco", [(event.x, event.y)])
 
@@ -21,22 +24,33 @@ def iniciar_figura_nova(event):
 # Quando mouse é movido com o botão pressionado
 def atualizar_figura_nova(event):
     global figura_nova
-
-    if figura_nova[0] == "rabisco":
+    tipo = figura_nova[0]
+    if tipo == "rabisco":
         figura_nova[1].append((event.x, event.y))
 
-    elif figura_nova[0] == "retangulo":
+    elif tipo == "retangulo":
         figura_nova = (
             "retangulo",
             (figura_nova[1][0], figura_nova[1][1], event.x, event.y)
         )
 
-    elif figura_nova[0] == "oval": ### novo ###
+    elif tipo == "oval": ### novo ###
         figura_nova = (
             "oval",
             (figura_nova[1][0], figura_nova[1][1], event.x, event.y)
         )
+    elif tipo == 'Círculo':
+        x1 = figura_nova[1][0]
+        y1 = figura_nova[1][1]
+        dx = event.x - x1
+        dy = event.y - y1
 
+        tamanho = max(abs(dx), abs(dy))
+
+        x2 = tamanho + x1 if dx >= 0 else x1 - tamanho
+        y2 = tamanho + y1 if dy >= 0 else y1 - tamanho
+
+        figura_nova = ('Círculo', (x1, y1, x2, y2) )
     else:  # figura_nova[0] == "linha"
         figura_nova = (
             "linha",
@@ -78,7 +92,7 @@ def desenhar_figuras():
                 values[3]
             )
 
-        elif fig == "oval": ### novo ###
+        elif fig in ["oval", 'Círculo']: 
             canvas.create_oval(
                 values[0],
                 values[1],
@@ -111,7 +125,7 @@ def desenhar_figura_nova():
             dash=(4, 2)
         )
 
-    elif fig == "oval": ### novo ###
+    elif fig in ["oval", 'Círculo']:
         canvas.create_oval(
             values[0],
             values[1],
@@ -133,7 +147,7 @@ def incompleta(figura):
     elif fig == "retangulo":
         return (values[0], values[1]) == (values[2], values[3])
 
-    elif fig == "oval": ### novo ###
+    elif fig in ["oval", 'Círculo']: ### novo ###
         return (values[0], values[1]) == (values[2], values[3])
 
     else:  # fig == "rabisco"
@@ -171,7 +185,8 @@ option_menu = ttk.OptionMenu(
     'Linha',
     'Rabisco',
     'retangulo',
-    'oval'
+    'oval',
+    'Círculo'
 )
 
 option_menu.grid(column=1, row=0, sticky=W, **paddings)
