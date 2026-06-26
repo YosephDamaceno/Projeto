@@ -4,12 +4,15 @@ from tkinter import colorchooser
 
 #Adicionando opção de escolher cores
 cor_atual = 'black'
+background = None
 
 def escolher_cor():
     global cor_atual
+    global background
     cor = colorchooser.askcolor()[1]
     if cor:
         cor_atual = cor
+        background = cor
 
 # Quando mouse é pressionado
 def iniciar_figura_nova(event):
@@ -25,11 +28,9 @@ def iniciar_figura_nova(event):
         figura_nova = ("oval", (event.x, event.y, event.x, event.y)) ### novo ###
 
     elif tipo_figura_var.get() == 'Círculo':
-        figura_nova = ('Círculo', (event.x, event.y, event.x, event.y)) 
-
+        figura_nova = ('Círculo', (event.x, event.y, event.x, event.y))
     else:
         figura_nova = ("rabisco", [(event.x, event.y)])
-
 
 # Quando mouse é movido com o botão pressionado
 def atualizar_figura_nova(event):
@@ -43,8 +44,6 @@ def atualizar_figura_nova(event):
             "retangulo",
             (figura_nova[1][0], figura_nova[1][1], event.x, event.y)
         )
-
-
     elif tipo == "oval": ### novo ###
         figura_nova = (
             "oval",
@@ -71,7 +70,6 @@ def atualizar_figura_nova(event):
     desenhar_figuras()
     desenhar_figura_nova()
 
-
 # Quando mouse é solto
 def incluir_figura_nova(event):
     # para evitar incluir figuras incompletas,
@@ -80,7 +78,6 @@ def incluir_figura_nova(event):
         figuras.append(figura_nova)
 
     desenhar_figuras()
-
 
 def desenhar_figuras():
     canvas.delete("all")
@@ -102,7 +99,8 @@ def desenhar_figuras():
                 values[1],
                 values[2],
                 values[3],
-                outline=cor_atual
+                outline=cor_atual,
+                fill=background
             )
 
         elif fig in ["oval", 'Círculo']: 
@@ -111,12 +109,12 @@ def desenhar_figuras():
                 values[1],
                 values[2],
                 values[3],
-                outline=cor_atual
+                outline=cor_atual,
+                fill=background
             )
 
         else:  # fig == "rabisco"
             canvas.create_line(values, fill= cor_atual)
-
 
 def desenhar_figura_nova():
     fig, values = figura_nova
@@ -136,7 +134,8 @@ def desenhar_figura_nova():
             values[1],
             values[2],
             values[3],
-            dash=(4, 2)
+            dash=(4, 2),
+            fill=background
         )
 
     elif fig in ["oval", 'Círculo']:
@@ -145,12 +144,12 @@ def desenhar_figura_nova():
             values[1],
             values[2],
             values[3],
-            dash=(4, 2)
+            dash=(4, 2),
+            fill=background
         )
 
     else:  # fig == "rabisco"
         canvas.create_line(values, dash=(4, 2))
-
 
 def incompleta(figura):
     fig, values = figura
@@ -207,7 +206,7 @@ option_menu.grid(column=1, row=0, sticky=W, **paddings)
 
 # Área de desenho
 canvas = Canvas(frame, bg='white', width=600, height=600)
-canvas.grid(column=0, row=1, columnspan=2, sticky=W, **paddings)
+canvas.grid(column=0, row=2, columnspan=2, sticky=W, **paddings)
 #botão pra escolher cores
 botao_cor = Button(root, text = "Escolher cor", command = escolher_cor)
 botao_cor.pack()
@@ -217,7 +216,6 @@ frame.pack()
 canvas.bind('<ButtonPress-1>', iniciar_figura_nova)
 canvas.bind('<B1-Motion>', atualizar_figura_nova)
 canvas.bind('<ButtonRelease-1>', incluir_figura_nova)
-
 
 root.attributes('-topmost', 1)
 root.mainloop()
