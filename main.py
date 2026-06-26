@@ -107,5 +107,5 @@ canvas.bind('<ButtonPress-1>', iniciar_figura_nova)
 canvas.bind('<B1-Motion>', atualizar_figura_nova)
 canvas.bind('<ButtonRelease-1>', incluir_figura_nova)
 
+root.attributes('-topmost', 1)
 root.mainloop()
-
