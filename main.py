@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import colorchooser 
+from classes import * #Referência ao arquivo onde as classes/subclasses estão guardadas, importando todas
 
 #Adicionando opção de escolher cores
 cor_atual = 'black'
@@ -8,76 +9,15 @@ background = None
 
 def escolher_cor_borda():
     global cor_atual
-    global background
     cor = colorchooser.askcolor()[1]
     if cor:
         cor_atual = cor
 
 def escolher_cor_preenchimento():
-    global cor_atual
     global background
     cor = colorchooser.askcolor()[1]
     if cor:
         background = cor
-
-#iniciando a mudança pra POO
-class Figura:
-    def __init__(self, x1, y1, x2, y2, cor_borda, cor_preenchimento=None):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-        self.cor_borda = cor_borda
-        self.cor_preenchimento = cor_preenchimento
-    def desenhar(self, canvas):
-        raise NotImplementedError('Quem herdar, tem que implementar a função desenhar!') #aqui é pra caso tente usar a classe pra desenhar
-    def atualizar(self, x2, y2):
-        self.x2 = x2
-        self.y2 = y2
-    def incompleta(self): #pra não precisar da função separada depois
-        raise NotImplementedError('Deve ser implementado pela classe')
-    
-class Linha(Figura):
-    def desenhar(self, canvas):
-        canvas.create_line(self.x1, self.y1, self.x2, self.y2, fill = self.cor_borda)
-    def incompleta(self):
-        return self.x1 == self.x2 and self.y1 == self.y2 
-
-class Rabisco(Figura):
-    def __init__(self, x, y, cor_borda):
-        super().__init__(x, y, x, y, cor_borda) #aqui a gnt importa o x1, x2... mas o rabisco começa com um ponto só 
-        self.pontos = [(x, y)]
-    def atualizar(self, x, y):
-        self.pontos.append((x, y))
-    def desenhar(self, canvas):
-        canvas.create_line(self.pontos, fill = self.cor_borda)
-    def incompleta(self):
-        return len(self.pontos) < 2
-
-class Retangulo(Figura):
-    def desenhar(self, canvas):
-        canvas.create_rectangle(self.x1, self.y1, self.x2, self.y2, outline = self.cor_borda, fill = self.cor_preenchimento)
-    def incompleta(self):
-        return self.x1 == self.x2 and self.y1 == self.y2
-class Oval(Figura):
-    def desenhar(self, canvas):
-        canvas.create_oval(self.x1, self.y1, self.x2, self.y2, outline = self.cor_borda, fill = self.cor_preenchimento)
-    def incompleta(self):
-        return self.x1 == self.x2 and self.y1 == self.y2
-
-class Circulo(Figura):
-    def atualizar(self, x2, y2):
-        dx = x2 - self.x1
-        dy = y2 - self.y1
-
-        tamanho = max(abs(dx), abs(dy))
-
-        self.x2 = tamanho + self.x1 if dx >= 0 else self.x1 - tamanho
-        self.y2 = tamanho + self.y1 if dy >= 0 else self.y1 - tamanho
-    def desenhar(self, canvas):
-        canvas.create_oval(self.x1, self.y1, self.x2, self.y2, outline = self.cor_borda, fill = self.cor_preenchimento)
-    def incompleta(self):
-        return self.x1 == self.x2 and self.y1 == self.y2
 
 # Quando mouse é pressionado
 def iniciar_figura_nova(event):
@@ -92,7 +32,7 @@ def iniciar_figura_nova(event):
         figura_nova = Retangulo(event.x, event.y, event.x, event.y, cor_atual, background)
 
     elif tipo == 'Oval':
-        figura_nova = Oval(event.x, event.y, event.x, event.y, cor_atual, background) ### novo ###
+        figura_nova = Oval(event.x, event.y, event.x, event.y, cor_atual, background)
 
     elif tipo == 'Círculo':
         figura_nova = Circulo(event.x, event.y, event.x, event.y, cor_atual, background)
@@ -132,9 +72,7 @@ def desenhar_figuras(): #aqui a gnt usa o polimorfismo
 # a função de desenhar figura nova não vai ser mais necessária
 
 
-
 # ******* MAIN ******* #
-
 figuras = []       # Todas as figuras desenhadas
 figura_nova = None # Figura que está sendo desenhada, mas ainda não foi incluída em figuras
 
@@ -173,6 +111,7 @@ option_menu.grid(column=1, row=0, sticky=W, **paddings)
 # Área de desenho
 canvas = Canvas(frame, bg='white', width=600, height=600)
 canvas.grid(column=0, row=3, columnspan=2, sticky=W, **paddings)
+
 #botão pra escolher cores
 botao_cor_borda = Button(frame, text = "Cor da Borda", command = escolher_cor_borda)
 botao_cor_borda.grid(column=0, row=1, sticky=W, **paddings)
